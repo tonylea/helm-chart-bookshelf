@@ -1,5 +1,7 @@
 # Bookshelf Helm Chart
 
+![Downloads](https://img.shields.io/github/downloads/tonylea/helm-chart-bookshelf/total)
+
 Deploys [Bookshelf](https://github.com/pennydreadful/bookshelf), a fork of the retired Readarr, from its own image, `ghcr.io/pennydreadful/bookshelf`.
 The chart deploys the `hardcover` build, which gets its book metadata from Hardcover.
 
