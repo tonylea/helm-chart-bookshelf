@@ -1,0 +1,19 @@
+suite: Service
+release:
+  name: bookshelf
+templates:
+  - templates/service.yaml
+tests:
+  - it: exposes Bookshelf's port to the pod's selector labels
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/name: bookshelf
+            app.kubernetes.io/instance: bookshelf
+      - equal:
+          path: spec.ports
+          value:
+            - name: http
+              port: 8787
+              targetPort: http
