@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.1](https://github.com/tonylea/helm-chart-bookshelf/compare/v2.0.0...v2.0.1) (2026-11-21)
+
+### Bug Fixes
+
+* let Bookshelf's first-run screen set the login ([660feb6](https://github.com/tonylea/helm-chart-bookshelf/commit/660feb6cd9bad682accd7b9c1cfd686ffebb8308))
+
+### Documentation
+
+* say the kind test is a fresh install ([0a205d7](https://github.com/tonylea/helm-chart-bookshelf/commit/0a205d73f3c458f20b4b1e73539843c7ff5f14e1))
+
 ## [2.0.0](https://github.com/tonylea/helm-chart-bookshelf/compare/v1.0.1...v2.0.0) (2026-11-21)
 
 ### ⚠ BREAKING CHANGES
