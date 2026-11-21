@@ -48,8 +48,8 @@ spec:
             - name: READARR__AUTH__APIKEY
               valueFrom:
                 {{- include "bookshelf.secretKeyRef" (list "apiKey" .Values.apiKey) | nindent 16 }}
-            - name: READARR__AUTH__METHOD
-              value: Forms
+            # No AUTH__METHOD: setting it skips the first-run screen that creates the user,
+            # and Bookshelf has no setting for the user, so the login could never be passed.
             # Behind a gateway or ingress every request comes from a private address,
             # so DisabledForLocalAddresses would turn the login off for everyone.
             - name: READARR__AUTH__REQUIRED

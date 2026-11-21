@@ -77,8 +77,6 @@ tests:
                 secretKeyRef:
                   name: bookshelf-api-key
                   key: api-key
-            - name: READARR__AUTH__METHOD
-              value: Forms
             - name: READARR__AUTH__REQUIRED
               value: Enabled
             - name: READARR__POSTGRES__HOST
