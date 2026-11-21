@@ -29,9 +29,11 @@ It runs one replica, and stops the old pod before starting the new one, since tw
 | `persistence.config.existingClaim` | none; the chart creates a claim |
 | `persistence.config.storageClassName` | the cluster's default class |
 | `persistence.config.size` | `5Gi` |
-| `persistence.data.existingClaim` | none; the chart creates a claim |
-| `persistence.data.storageClassName` | the cluster's default class |
-| `persistence.data.size` | none; required unless `existingClaim` is set |
+| `persistence.data` | none; at least one mount required |
+| `persistence.data[].name` | required; mounted at `/data/<name>` |
+| `persistence.data[].existingClaim` | none; the chart creates a claim |
+| `persistence.data[].storageClassName` | the cluster's default class |
+| `persistence.data[].size` | none; required unless `existingClaim` is set |
 | `httpRoute.enabled` | `false` |
 | `httpRoute.parentRefs` | none; required when enabled |
 | `httpRoute.hostnames` | none |
@@ -52,7 +54,7 @@ The chart sets these as environment variables, which override `config.xml`, so t
 - A Postgres server, with the main, log and cache databases and the user that owns them made beforehand.
 - A Secret holding the API key, and one or two holding the Postgres user and password.
 - A storage class for the claims the chart creates, the cluster's default unless named.
-  A claim the chart creates is `ReadWriteOnce`, so sharing `/data` with a download client needs an existing claim.
+  A claim the chart creates is `ReadWriteOnce`, so sharing a data mount with a download client needs an existing claim.
   Bookshelf's own documentation is in [its repo](https://github.com/pennydreadful/bookshelf).
 - The Gateway API's `HTTPRoute` CRD, when `httpRoute.enabled` is set.
 
@@ -78,7 +80,10 @@ postgres:
       name: bookshelf-postgres-app
 persistence:
   data:
-    existingClaim: media
+    - name: downloads
+      existingClaim: downloads
+    - name: books
+      existingClaim: books
 ```
 
 ## Development
