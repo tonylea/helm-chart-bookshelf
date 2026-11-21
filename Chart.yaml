@@ -1,0 +1,9 @@
+apiVersion: v2
+name: bookshelf
+description: Deploys Bookshelf, a Readarr fork that finds, downloads and organises books
+type: application
+version: 1.0.0
+appVersion: "hardcover-v0.4.21.182"
+home: https://github.com/tonylea/helm-chart-bookshelf
+sources:
+  - https://github.com/pennydreadful/bookshelf
