@@ -94,7 +94,7 @@ Pull requests run:
 
 - `helm lint --strict`, and the rendered chart checked by kubeconform against Kubernetes 1.37.
 - helm-unittest's tests in `tests/`.
-- An install and upgrade with chart-testing in a kind cluster, against a throwaway Postgres from `ci/kind` with the three databases.
+- An install with chart-testing in a kind cluster, against a throwaway Postgres from `ci/kind` with the three databases.
 
 Commits follow Conventional Commits.
 Releases are versioned and tagged automatically from `main`, and published to the Helm repository on this repo's GitHub Pages.
