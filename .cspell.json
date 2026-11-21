@@ -1,0 +1,36 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "dictionaries": [
+    "softwareTerms"
+  ],
+  "ignorePaths": [
+    ".git/**",
+    ".husky/**",
+    "node_modules/**",
+    "CHANGELOG.md",
+    "package-lock.json"
+  ],
+  "words": [
+    "APIKEY",
+    "CACHEDB",
+    "hardcover",
+    "hardlink",
+    "hardlinks",
+    "httproute",
+    "INSTANCENAME",
+    "isready",
+    "kubeconform",
+    "LOGDB",
+    "MAINDB",
+    "nindent",
+    "pennydreadful",
+    "PGID",
+    "PUID",
+    "Radarr",
+    "Readarr",
+    "Servarr",
+    "Sonarr",
+    "timezone"
+  ]
+}
