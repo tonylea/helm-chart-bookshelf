@@ -1,0 +1,222 @@
+suite: Deployment
+release:
+  name: bookshelf
+templates:
+  - templates/deployment.yaml
+values:
+  - ../ci/kind-values.yaml
+tests:
+  - it: runs one replica of the chart's appVersion, stopping the old pod first
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/pennydreadful/bookshelf:hardcover-v0.4.21.182
+
+  - it: uses the image tag when one is set
+    set:
+      image.tag: hardcover-v0.4.21.180
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/pennydreadful/bookshelf:hardcover-v0.4.21.180
+
+  - it: leaves the chart's version off the pod, so a chart-only release doesn't restart it
+    chart:
+      version: 9.9.9
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/name: bookshelf
+            app.kubernetes.io/instance: bookshelf
+            app.kubernetes.io/version: hardcover-v0.4.21.182
+
+  - it: starts as root with the default seccomp profile, and no service links or API token
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            seccompProfile:
+              type: RuntimeDefault
+      - equal:
+          path: spec.template.spec.enableServiceLinks
+          value: false
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+
+  - it: passes the user, group, timezone and Bookshelf's settings
+    set:
+      puid: 1026
+      pgid: 100
+      timezone: Europe/Berlin
+      postgres.port: 5433
+      postgres.databases.main: books
+      postgres.databases.log: books-log
+      postgres.databases.cache: books-cache
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: PUID
+              value: "1026"
+            - name: PGID
+              value: "100"
+            - name: TZ
+              value: Europe/Berlin
+            - name: READARR__APP__INSTANCENAME
+              value: Bookshelf
+            - name: READARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: bookshelf-api-key
+                  key: api-key
+            - name: READARR__AUTH__METHOD
+              value: Forms
+            - name: READARR__AUTH__REQUIRED
+              value: Enabled
+            - name: READARR__POSTGRES__HOST
+              value: postgres
+            - name: READARR__POSTGRES__PORT
+              value: "5433"
+            - name: READARR__POSTGRES__MAINDB
+              value: books
+            - name: READARR__POSTGRES__LOGDB
+              value: books-log
+            - name: READARR__POSTGRES__CACHEDB
+              value: books-cache
+            - name: READARR__POSTGRES__USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
+            - name: READARR__POSTGRES__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+
+  - it: defaults the user, group, timezone and databases
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PUID
+            value: "1000"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PGID
+            value: "1000"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TZ
+            value: UTC
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: READARR__POSTGRES__PORT
+            value: "5432"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: READARR__POSTGRES__MAINDB
+            value: readarr-main
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: READARR__POSTGRES__LOGDB
+            value: readarr-log
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: READARR__POSTGRES__CACHEDB
+            value: readarr-cache
+
+  - it: fails without the API key's Secret
+    set:
+      apiKey.secretKeyRef.name: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: apiKey.secretKeyRef.name is required
+
+  - it: fails without the Postgres host
+    set:
+      postgres.host: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: postgres.host is required
+
+  - it: fails without the Postgres password's Secret
+    set:
+      postgres.password.secretKeyRef.name: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: postgres.password.secretKeyRef.name is required
+
+  - it: probes /ping, giving start-up 5 minutes
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe
+          value:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.path
+          value: /ping
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /ping
+
+  - it: requests CPU and memory, with no limits
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+
+  - it: mounts the chart's claims at /config and /data
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: config
+              persistentVolumeClaim:
+                claimName: bookshelf-config
+            - name: data
+              persistentVolumeClaim:
+                claimName: bookshelf-data
+
+  - it: mounts existing claims when given
+    set:
+      persistence.config.existingClaim: my-config
+      persistence.data.existingClaim: my-data
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: config
+              persistentVolumeClaim:
+                claimName: my-config
+            - name: data
+              persistentVolumeClaim:
+                claimName: my-data
