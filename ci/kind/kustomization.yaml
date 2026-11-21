@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - secrets.yaml
   - postgres.yaml
-# The image creates the main database; this creates the log and cache ones beside it.
 configMapGenerator:
   - name: postgres-init
     files:

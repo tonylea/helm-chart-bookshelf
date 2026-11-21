@@ -1,21 +1,16 @@
 image:
-  # Empty uses the chart's appVersion.
   tag: ""
 
-# The image starts as root, gives /config to this user and group, then runs Bookshelf as them.
 puid: 1000
 pgid: 1000
 
 timezone: UTC
 
-# A fixed API key, so it survives /config being rebuilt.
 apiKey:
   secretKeyRef:
     name: ""
     key: api-key
 
-# Bookshelf keeps its data in three databases, and has no setting to turn the log one off.
-# The keys default to those of a kubernetes.io/basic-auth Secret.
 postgres:
   host: ""
   port: 5432
@@ -37,21 +32,17 @@ resources:
     cpu: 50m
     memory: 256Mi
 
-# Each is an existing claim, or else a ReadWriteOnce claim the chart creates.
-# An empty storageClassName uses the cluster's default class.
 persistence:
-  # Bookshelf's config.xml, logs, backups and artwork cache (author images and book covers).
   config:
     existingClaim: ""
     storageClassName: ""
     size: 5Gi
-  # The book library and the download folders, on one filesystem so imports are hardlinks or renames.
+  # The library and the download folders, on one filesystem so imports are hardlinks or renames.
   data:
     existingClaim: ""
     storageClassName: ""
     size: ""
 
-# A Gateway API HTTPRoute to the web UI.
 httpRoute:
   enabled: false
   parentRefs: []
