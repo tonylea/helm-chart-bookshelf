@@ -1,6 +1,6 @@
 {
   "name": "helm-chart-bookshelf",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Deploys Bookshelf, a Readarr fork that finds, downloads and organises books",
   "private": true,
   "repository": {

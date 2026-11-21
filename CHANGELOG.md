@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.0](https://github.com/tonylea/helm-chart-bookshelf/compare/v1.0.1...v2.0.0) (2026-11-21)
+
+### ⚠ BREAKING CHANGES
+
+* persistence.data is now a list of named mounts, each at
+  /data/<name>, with at least one required.
+
+### Features
+
+* mount each data volume at /data/<name> ([3de7058](https://github.com/tonylea/helm-chart-bookshelf/commit/3de705889f7c986024891d8e3b580d59a6919b84))
+
+### Documentation
+
+* show the chart's download count ([db9f810](https://github.com/tonylea/helm-chart-bookshelf/commit/db9f810163339830bf5a8cc2a18a4c747f9be068))
+
 ## [1.0.1](https://github.com/tonylea/helm-chart-bookshelf/compare/v1.0.0...v1.0.1) (2026-11-21)
 
 ### Bug Fixes
